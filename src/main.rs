@@ -1,21 +1,37 @@
-use std::net::TcpListener;
-use std::thread::spawn;
-use tungstenite::accept;
+use axum::{Router, routing::get};
 
-/// A WebSocket echo server
-fn main() {
-    let server = TcpListener::bind("0.0.0.0:9001").unwrap();
-    for stream in server.incoming() {
-        spawn(move || {
-            let mut websocket = accept(stream.unwrap()).unwrap();
-            loop {
-                let msg = websocket.read().unwrap();
+use crate::handlers::*;
 
-                // We do not want to send back ping/pong messages.
-                if msg.is_binary() || msg.is_text() {
-                    websocket.send(msg).unwrap();
-                }
-            }
-        });
-    }
+mod db;
+mod handlers;
+mod logger;
+mod models;
+
+#[derive(Clone)]
+struct AppState {
+    db: db::Db,
+}
+
+#[tokio::main]
+async fn main() -> Result<(), sqlx::Error> {
+    dotenv::dotenv().unwrap();
+    logger::init().unwrap();
+
+    let app_state = AppState {
+        db: db::Db::new().await?,
+    };
+
+    let app = Router::new()
+        .route("/", get(|| async { "Hello World!" }))
+        .route("/player", get(get_all_player_data))
+        .route("/player/{id}", get(get_player_data))
+        .with_state(app_state);
+
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
+        .await
+        .unwrap();
+
+    axum::serve(listener, app).await.unwrap();
+
+    Ok(())
 }

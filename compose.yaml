@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:17
+    volumes:
+      - player-data:/var/lib/postgresql/data
+    restart: always
+    environment:
+      POSTGRES_USER: hehe
+      POSTGRES_PASSWORD: xD
+      POSTGRES_DB: player_db
+    ports:
+      - "5432:5432"
+
+volumes:
+  player-data:
