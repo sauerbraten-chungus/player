@@ -1,4 +1,7 @@
-use axum::{Router, routing::get};
+use axum::{
+    Router,
+    routing::{get, post},
+};
 
 use crate::handlers::*;
 
@@ -25,6 +28,7 @@ async fn main() -> Result<(), sqlx::Error> {
         .route("/", get(|| async { "Hello World!" }))
         .route("/player", get(get_all_player_data))
         .route("/player/{id}", get(get_player_data))
+        .route("/players/batch", post(post_batch_player_data))
         .with_state(app_state);
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")

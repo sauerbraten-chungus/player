@@ -1,4 +1,4 @@
-use crate::models::Player;
+use crate::models::{IncomingPlayer, Player};
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use std::env;
 
@@ -30,5 +30,37 @@ impl Db {
             .await?;
 
         Ok(players)
+    }
+
+    pub async fn upsert_batch_players(
+        &self,
+        incoming: Vec<IncomingPlayer>,
+    ) -> Result<(), sqlx::Error> {
+        let mut tx = self.pool.begin().await?;
+
+        for inc in incoming {
+            sqlx::query!(
+                r#"
+                INSERT INTO players (name, frags, deaths, accuracy, matches_played, elo, commendations, created_at)
+                VALUES ($1, $2, $3, $4, 1, 1000, 0, $5)
+                ON CONFLICT (name) DO UPDATE
+                SET frags = players.frags + $2,  -- Cumulative add
+                    deaths = players.deaths + $3,
+                    accuracy = (players.accuracy * players.matches_played + $4) / (players.matches_played + 1)::float,
+                    matches_played = players.matches_played + 1
+                "#,
+                inc.name,
+                inc.frags,
+                inc.deaths,
+                inc.accuracy as f64,  // Cast if incoming.accuracy is i32
+                chrono::Utc::now().naive_utc().date()
+            )
+            .execute(&mut *tx)
+            .await?;
+        }
+
+        tx.commit().await?;
+
+        Ok(())
     }
 }
