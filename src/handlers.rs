@@ -7,7 +7,7 @@ use log::error;
 
 pub async fn get_player_data(
     State(state): State<AppState>,
-    Path(id): Path<i32>,
+    Path(id): Path<i64>,
 ) -> Result<Json<Player>, StatusCode> {
     let player = state.db.get_player_by_id(id).await.map_err(|e| {
         error!("Failed to fetch player {}: {}", id, e);

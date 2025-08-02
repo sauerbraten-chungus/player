@@ -17,7 +17,7 @@ impl Db {
         Ok(Db { pool })
     }
 
-    pub async fn get_player_by_id(&self, id: i32) -> Result<Player, sqlx::Error> {
+    pub async fn get_player_by_id(&self, id: i64) -> Result<Player, sqlx::Error> {
         let player = sqlx::query_as!(Player, "SELECT * FROM players WHERE id = $1", id)
             .fetch_one(&self.pool)
             .await?;
