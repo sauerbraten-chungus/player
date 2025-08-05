@@ -22,7 +22,7 @@ struct AppState {
 
 #[tokio::main]
 async fn main() -> Result<(), sqlx::Error> {
-    dotenv::dotenv().unwrap();
+    dotenv::dotenv().ok();
     logger::init().unwrap();
 
     let app_state = AppState {

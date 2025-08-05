@@ -3,7 +3,6 @@ services:
     image: postgres:17
     volumes:
       - player-data:/var/lib/postgresql/data
-    restart: always
     environment:
       POSTGRES_USER: hehe
       POSTGRES_PASSWORD: xD
