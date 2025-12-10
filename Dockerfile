@@ -1,9 +1,19 @@
 FROM rust:1.88 as builder
 WORKDIR /app
+
+# Install protoc (Protocol Buffer compiler)
+RUN apt-get update && apt-get install -y protobuf-compiler && rm -rf /var/lib/apt/lists/*
+
+# Copy build files
 COPY Cargo.toml Cargo.lock ./
+COPY build.rs ./
+COPY proto ./proto
 COPY src ./src
 COPY migrations ./migrations
-copy .sqlx ./.sqlx
+COPY .sqlx ./.sqlx
+
+# Build with SQLx offline mode
+ENV SQLX_OFFLINE=true
 RUN cargo build --release
 
 FROM debian:bookworm-slim
