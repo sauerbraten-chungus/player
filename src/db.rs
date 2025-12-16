@@ -1,6 +1,7 @@
 use crate::models::{IncomingPlayer, Player};
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use std::env;
+use uuid::Uuid;
 
 #[derive(Clone)]
 pub struct Db {
