@@ -24,7 +24,6 @@ CREATE TABLE match_participants (
     frags INTEGER NOT NULL DEFAULT 0 CHECK (frags >= 0),
     deaths INTEGER NOT NULL DEFAULT 0 CHECK (deaths >= 0),
     accuracy NUMERIC(5,2) NOT NULL DEFAULT 0.00 CHECK (accuracy BETWEEN 0.00 AND 100.00),
-    matches_played INTEGER NOT NULL DEFAULT 0 CHECK (matches_played >= 0),
     elo INTEGER NOT NULL DEFAULT 1000 CHECK (elo >= 0)
 );
 

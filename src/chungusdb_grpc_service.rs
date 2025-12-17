@@ -1,5 +1,5 @@
+use log::{error, info};
 use tonic::{Request, Response, Status};
-use log::{info, error};
 
 use crate::db::Db;
 use crate::models::IncomingPlayer;
@@ -31,19 +31,26 @@ impl ChungusDbService for ChungusDbServiceImpl {
     ) -> Result<Response<MatchStatsResponse>, Status> {
         let match_stats = request.into_inner();
 
-        info!("Received match stats for {} players", match_stats.player_stats.len());
+        info!(
+            "Received match stats for {} players",
+            match_stats.player_stats.len()
+        );
 
-        // Transform the proto map into Vec<IncomingPlayer>
         let incoming_players: Vec<IncomingPlayer> = match_stats
             .player_stats
             .into_iter()
-            .map(|(chungid, stats)| {
-                info!("Processing player: {} with {} kills", chungid, stats.kills);
-                IncomingPlayer {
-                    name: chungid,
-                    frags: stats.kills as i32, // kills maps to frags
-                    deaths: 0,                  // Not tracked in current proto
-                    accuracy: 0,                // Not tracked in current proto
+            .filter_map(|(chungid, stats)| match (uuid::Uuid::parse_str(&chungid)) {
+                Ok(chungid) => Some(IncomingPlayer {
+                    chungid,
+                    name: stats.name,
+                    frags: stats.frags,
+                    deaths: stats.deaths,
+                    accuracy: stats.accuracy,
+                    elo: stats.elo,
+                }),
+                Err(e) => {
+                    error!("Invalid UUID converting player starts into IncomingPlayer");
+                    None
                 }
             })
             .collect();
