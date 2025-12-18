@@ -28,14 +28,14 @@ pub async fn get_all_player_data(
     Ok(Json(players))
 }
 
-pub async fn post_batch_player_data(
-    State(state): State<AppState>,
-    Json(incoming): Json<Vec<IncomingPlayer>>,
-) -> Result<StatusCode, StatusCode> {
-    state.db.upsert_batch_players(incoming).await.map_err(|e| {
-        error!("Failed to upsert players: {}", e);
-        StatusCode::INTERNAL_SERVER_ERROR
-    })?;
+// pub async fn post_batch_player_data(
+//     State(state): State<AppState>,
+//     Json(incoming): Json<Vec<IncomingPlayer>>,
+// ) -> Result<StatusCode, StatusCode> {
+//     state.db.upsert_batch_players(incoming).await.map_err(|e| {
+//         error!("Failed to upsert players: {}", e);
+//         StatusCode::INTERNAL_SERVER_ERROR
+//     })?;
 
-    Ok(StatusCode::OK)
-}
+//     Ok(StatusCode::OK)
+// }

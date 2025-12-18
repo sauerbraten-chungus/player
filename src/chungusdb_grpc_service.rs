@@ -56,13 +56,13 @@ impl ChungusDbService for ChungusDbServiceImpl {
             .collect();
 
         // Use the existing database upsert logic
-        self.db
-            .upsert_batch_players(incoming_players)
-            .await
-            .map_err(|e| {
-                error!("Failed to upsert match stats: {}", e);
-                Status::internal(format!("Database error: {}", e))
-            })?;
+        // self.db
+        //     .upsert_batch_players(incoming_players)
+        //     .await
+        //     .map_err(|e| {
+        //         error!("Failed to upsert match stats: {}", e);
+        //         Status::internal(format!("Database error: {}", e))
+        //     })?;
 
         info!("Successfully processed match stats");
 

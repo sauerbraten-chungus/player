@@ -19,7 +19,7 @@ CREATE TABLE matches (
 CREATE TABLE match_participants (
     id UUID PRIMARY KEY DEFAULT uuidv7(),
     match_id UUID REFERENCES matches(id),
-    player_id UUID REFERENCES players(chungid),
+    chungid UUID REFERENCES players(chungid),
     name VARCHAR(80) NOT NULL,
     frags INTEGER NOT NULL DEFAULT 0 CHECK (frags >= 0),
     deaths INTEGER NOT NULL DEFAULT 0 CHECK (deaths >= 0),
@@ -27,7 +27,7 @@ CREATE TABLE match_participants (
     elo INTEGER NOT NULL DEFAULT 1000 CHECK (elo >= 0)
 );
 
-CREATE INDEX idx_match_participants_player_id ON match_participants(player_id);
+CREATE INDEX idx_match_participants_chungid ON match_participants(chungid);
 CREATE INDEX idx_match_participants_match_id ON match_participants(match_id);
 
 -- Test
